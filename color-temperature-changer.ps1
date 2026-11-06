@@ -318,6 +318,22 @@ foreach ($entry in $sliderDefaults) {
     $item.Add_Click({ $this.Tag.Value = [int]$this.Tag.Tag })
     $bar.ContextMenuStrip = $menu
 }
+# Up/Down arrows move focus between the sliders that are currently enabled instead of changing the value.
+# Setting Handled stops the trackbar's own key handling.
+$allSliders = @($trkTemp, $trkTint) + $rgbSliders
+foreach ($bar in $allSliders) {
+    $bar.Add_KeyDown({
+        param($src, $e)
+        if ($e.KeyCode -ne 'Up' -and $e.KeyCode -ne 'Down') { return }
+        $e.Handled = $true
+        $usable = @($allSliders | Where-Object { $_.CanFocus })
+        $i = [Array]::IndexOf($usable, $src)
+        if ($usable.Count -eq 0) { return }
+        $step = if ($e.KeyCode -eq 'Down') { 1 } else { -1 }
+        $j = (($i + $step) % $usable.Count + $usable.Count) % $usable.Count   # wraps around at both ends
+        [void]$usable[$j].Focus()
+    })
+}
 $tips.SetToolTip($btnReset, 'Reset this display to 6500 K, tint 0')
 $tips.SetToolTip($chkKeep, 'Leave the adjustment active after the window closes')
 
@@ -352,7 +368,7 @@ $refresh = {
     $touched[$dev] = $true
     $state[$dev] = @{ Temp = $rbTemp.Checked; K = $trkTemp.Value; Tint = $trkTint.Value; Rgb = @($rgbSliders | ForEach-Object { $_.Value }) }
     $lblStatus.Text = if ($ok) {
-        'Applied. Arrow keys move a focused slider in small steps, PgUp/PgDn in larger ones.'
+        'Applied. Up/Down: switch slider. Left/Right: small steps. PgUp/PgDn: larger steps.'
     } else {
         'Windows rejected this setting (too far from normal, or the display does not support gamma ramps). Try a value closer to 6500 K / 1.000.'
     }

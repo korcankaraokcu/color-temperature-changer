@@ -42,7 +42,7 @@ irm https://raw.githubusercontent.com/korcankaraokcu/color-temperature-changer/m
 No admin rights are needed.
 
 **Controls:**
-- Click a slider, then use the **arrow keys** for small steps and **PgUp/PgDn** for larger ones.
+- Click a slider, then use **Left/Right** for small steps and **PgUp/PgDn** for larger ones. **Up/Down** moves to the previous or next slider.
 - **Double-click a slider's thumb**, or **right-click the slider → Reset**, to reset just that slider: 6500 K, tint 0, or RGB 1.000.
 - **Reset** returns the selected display to 6500 K and tint 0, which is no change.
 - When you **close the window**, every display it changed goes back to normal, unless **Keep after closing** is checked.
